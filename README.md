@@ -3,7 +3,7 @@ Trusted Shops Custom Reviews
 
 ##Structured Data a.k.a Rich Snippets
 
-See the folder [Structured data](https://github.com/trustedshops/reviews/structured_data) for integration examples.
+See the folder [Structured data](https://github.com/trustedshops/reviews/tree/master/structured_data) for integration examples.
 
 License
 -------
