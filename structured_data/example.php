@@ -7,11 +7,11 @@
  * Requires version PHP 5.+
  */
 
-$tsId = 'XA2A8D35838AF5F63E5EB0E05847B1CB8';
-$cacheFileName = '/tmp/' . $tsId . '.xml';
+$tsId = 'XC8B181176B92AB62AB07D8AECEB02BF4';
+$cacheFileName = '/tmp/' . $tsId . '.json';
 $cacheTimeOut = 43200; // half a day
-$apiUrl = 'http://www.trustedshops.com/api/ratings/v1/' . $tsId . '.xml';
-$xmlFound = false;
+$apiUrl = 'http://api.trustedshops.com/rest/public/v2/shops/'.$tsId.'/quality.json';
+$reviewsFound = false;
 
 if (!function_exists('cachecheck')) {
     function cachecheck($filename_cache, $timeout = 10800)
@@ -37,15 +37,16 @@ if (!cachecheck($cacheFileName, $cacheTimeOut)) {
     // Make sure you can write to file's destination
     file_put_contents($cacheFileName, $output);
 }
-if ($xml = simplexml_load_file($cacheFileName)) {
-    $xPath = "/shop/ratings/result[@name='average']";
-    $result = $xml->xpath($xPath);
-    $result = (float)$result[0];
+if ($jsonObject = json_decode(file_get_contents($cacheFileName), true)) {
+    $result = $jsonObject['response']['data']['shop']['qualityIndicators']['reviewIndicator']['overallMark'];
+    $count = $jsonObject['response']['data']['shop']['qualityIndicators']['reviewIndicator']['activeReviewCount'];
+    $shopName = $jsonObject['response']['data']['shop']['name'];
     $max = "5.00";
-    $count = $xml->ratings["amount"];
-    $shopName = $xml->name;
-    $xmlFound = true;
+
+    if ($count > 0) {
+        $reviewsFound = true;
+    }
 }
-if ($xmlFound) { ?>
+if ($reviewsFound) { ?>
     <a href="http://www.trustedshops.eu/customer-review/" target="_blank">Trusted Shops customer reviews</a>:<span xmlns:v="http://rdf.data-vocabulary.org/#" typeof="v:Review-aggregate"> <span rel="v:rating"><span property="v:value"><?php echo $result;?> </span> </span> / <span property="v:best"><?php echo $max;?> </span> of <span property="v:votes"><?php echo $count;?> </span> <a href="https://www.trustedshops.com/buyerrating/info_<?php echo $tsId?>.html" title="<?php echo $shopName;?> custom reviews" target="_blank"><?php echo $shopName;?> reviews</a></span>
 <?php }
