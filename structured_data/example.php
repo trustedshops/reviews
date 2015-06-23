@@ -48,5 +48,12 @@ if ($jsonObject = json_decode(file_get_contents($cacheFileName), true)) {
     }
 }
 if ($reviewsFound) { ?>
-    <a href="http://www.trustedshops.eu/customer-review/" target="_blank">Trusted Shops customer reviews</a>:<span xmlns:v="http://rdf.data-vocabulary.org/#" typeof="v:Review-aggregate"> <span rel="v:rating"><span property="v:value"><?php echo $result;?> </span> </span> / <span property="v:best"><?php echo $max;?> </span> of <span property="v:votes"><?php echo $count;?> </span> <a href="https://www.trustedshops.com/buyerrating/info_<?php echo $tsId?>.html" title="<?php echo $shopName;?> custom reviews" target="_blank"><?php echo $shopName;?> reviews</a></span>
+    <div itemscope itemtype="http://schema.org/LocalBusiness">
+        <div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+            <span itemprop="ratingValue"><?php echo $result;?></span> /
+            <span itemprop="bestRating"><?php echo $max;?></span> of
+            <span itemprop="ratingCount"><?php echo $count;?> </span>
+            <a href="https://www.trustedshops.com/buyerrating/info_<?php echo $tsId?>.html" title="<?php echo $shopName;?> custom reviews" target="_blank"><?php echo $shopName;?> customer reviews | Trusted Shops</a>
+        </div>
+    </div>
 <?php }
