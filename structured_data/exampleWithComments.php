@@ -8,9 +8,11 @@
  */
 
 $tsId = 'XA2A8D35838AF5F63E5EB0E05847B1CB8';
-$cacheFileName = '/tmp/' . $tsId . '.xml';
+$cacheFileNameReviewsApi = '/tmp/' . $tsId . '_reviews.json';
+$cacheFileNameQiApi = '/tmp/' . $tsId . '_quality.json';
 $cacheTimeOut = 43200; // half a day
-$apiUrl = 'http://www.trustedshops.com/api/ratings/v1/' . $tsId . '.xml';
+$reviewsApiUrl = 'http://api.trustedshops.com/rest/public/v2/shops/' . $tsId . '/reviews.json';
+$qiApiUrl = 'http://api.trustedshops.com/rest/public/v2/shops/' . $tsId . '/quality.json';
 $xmlFound = false;
 
 if (!function_exists('cachecheck')) {
@@ -24,52 +26,72 @@ if (!function_exists('cachecheck')) {
 }
 
 // check if cached version exists
-if (!cachecheck($cacheFileName, $cacheTimeOut)) {
+if (!cachecheck($cacheFileNameReviewsApi, $cacheTimeOut)) {
     // load fresh from API
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, false);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_POST, false);
-    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_URL, $reviewsApiUrl);
     $output = curl_exec($ch);
     curl_close($ch);
     // Write the contents back to the file
     // Make sure you can write to file's destination
-    file_put_contents($cacheFileName, $output);
+    file_put_contents($cacheFileNameReviewsApi, $output);
 }
-if ($xml = simplexml_load_file($cacheFileName)) {
-    $xPath = "/shop/ratings/result[@name='average']";
-    $result = $xml->xpath($xPath);
-    $result = (float)$result[0];
+
+if (!cachecheck($cacheFileNameQiApi, $cacheTimeOut)) {
+    // load fresh from API
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, false);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_POST, false);
+    curl_setopt($ch, CURLOPT_URL, $qiApiUrl);
+    $output = curl_exec($ch);
+    curl_close($ch);
+    // Write the contents back to the file
+    // Make sure you can write to file's destination
+    file_put_contents($cacheFileNameQiApi, $output);
+}
+$jsonObjectReviews = json_decode(file_get_contents($cacheFileNameReviewsApi), true);
+$jsonObjectQi = json_decode(file_get_contents($cacheFileNameQiApi), true);
+
+if ($jsonObjectReviews && $jsonObjectQi) {
+    $result = $jsonObjectQi['response']['data']['shop']['qualityIndicators']['reviewIndicator']['overallMark'];
+    $count = $jsonObjectReviews['response']['responseInfo']['count'];
+    $shopName = $jsonObjectReviews['response']['data']['shop']['name'];
+    $reviewsList = $jsonObjectReviews['response']['data']['shop']['reviews'];
     $max = "5.00";
-    $count = $xml->ratings["amount"];
-    $shopName = $xml->name;
-    ?>
-    <div itemscope itemtype="http://schema.org/LocalBusiness">
-        <a href="http://www.trustedshops.eu/customer-review/" target="_blank">Trusted Shops Customer Reviews</a>:<span itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating"> <span itemprop="ratingValue" class="ratingNote"><?php echo $result;?></span> / <span itemprop="bestRating"><?php echo $max;?> </span> of <span itemprop="ratingCount"><?php echo $count;?></span></span> <a href="https://www.trustedshops.eu/buyerrating/info_<?php echo $tsId; ?>.html" title="<?php echo $shopName;?> customer reviews" target="_blank"><span itemprop="name"><?php echo $shopName;?></span> customer reviews</a>    <?php
 
-    /* Set Locale for Date output */
-    setlocale(LC_ALL, 'de_DE');
+    if ($count > 0) { ?>
 
-    foreach ($xml->ratings->opinions[0] as $review) {
-        $reviewDateRichSnippets = date('Y-m-d', strtotime($review->date));
-        $reviewDateFormatted = strftime('%d. %B %Y', strtotime($review->date));
-        $reviewComment = $review->comment;
-        $reviewRating = $review->rating[0];
-        $reviewRatingString = $review->rating[1];
-        if ($review->reaction) {
-            $shopReply = $review->reaction->reply;
-        }
-        ?>
-        <div itemprop="review" itemscope itemtype="http://schema.org/Review">
-            <meta itemprop="itemreviewed" value="<?php echo $shopName ?>" />
-            <span itemprop="dateCreated" content="<?php echo $reviewDateRichSnippets; ?>"><?php echo $reviewDateFormatted; ?></span>.
-            <span itemprop="reviewbody"><?php echo $reviewComment; ?></span>
+        <div itemscope itemtype="http://schema.org/LocalBusiness">
+            <a href="http://www.trustedshops.eu/customer-review/" target="_blank">Trusted Shops Customer Reviews</a>:<span itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating"> <span itemprop="ratingValue" class="ratingNote"><?php echo $result;?></span> / <span itemprop="bestRating"><?php echo $max;?> </span> of <span itemprop="ratingCount"><?php echo $count;?></span></span> <a href="https://www.trustedshops.eu/buyerrating/info_<?php echo $tsId; ?>.html" title="<?php echo $shopName;?> customer reviews" target="_blank"><span itemprop="name"><?php echo $shopName;?></span> customer reviews</a>
+
+            <?php
+            /* Set Locale for Date output */
+            setlocale(LC_ALL, 'de_DE');
+
+            foreach ($reviewsList as $review) {
+                $reviewDateRichSnippets = date('Y-m-d', strtotime($review['changeDate']));
+                $reviewDateFormatted = strftime('%d. %B %Y', strtotime($review['changeDate']));
+                $reviewComment = $review['comment'];
+                $reviewRating = $review['mark'];
+                $reviewRatingString = $review['markDescription'];
+                if (isset($review['statements'])) {
+                    $shopReply = $review['statements'][0]['comment'];
+                }
+                ?>
+                <div itemprop="review" itemscope itemtype="http://schema.org/Review">
+                    <meta itemprop="itemreviewed" value="<?php echo $shopName ?>" />
+                    <span itemprop="dateCreated" content="<?php echo $reviewDateRichSnippets; ?>"><?php echo $reviewDateFormatted; ?></span>.
+                    <span itemprop="reviewbody"><?php echo $reviewComment; ?></span>
             <span itemprop="reviewRating" itemscope itemtype="http://schema.org/Rating">
             <span itemprop="ratingValue"><?php echo $reviewRating; ?></span>/5</span>
+                </div>
+            <?php
+            } ?>
         </div>
-    <?php
-    } ?>
-    </div>
-    <?php
+
+    <?php }
 }
