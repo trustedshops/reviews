@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JS Bin</title>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+</head>
+<body>
+<div id="reviewsAggregationOutput"></div>
+<script>
+    $(function() {
+        var tsId = 'XC8B181176B92AB62AB07D8AECEB02BF4';
+        var apiURL = 'http://api.trustedshops.com/rest/public/v2/shops/'+ tsId +'/quality/reviews.json';
+
+        $.get( apiURL, function( data ) {
+            var result = data.response.data.shop.qualityIndicators.reviewIndicator.overallMark;
+            var count = data.response.data.shop.qualityIndicators.reviewIndicator.activeReviewCount;
+            var shopName = data.response.data.shop.name;
+            var max = "5.00";
+
+            if (count > 0) {
+                $('#reviewsAggregationOutput').html(
+                        '<div itemscope itemtype="http://schema.org/LocalBusiness"> ' +
+                        '<div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">'+
+                        '<span itemprop="ratingValue">'+ result +'</span> /'+
+                        '<span itemprop="bestRating">' + max +'</span> of '+
+                        '<span itemprop="ratingCount">' + count +'</span> '+
+                        '<a href="https://www.trustedshops.com/buyerrating/info_'+ tsId +'.html" title="<?php echo $shopName;?> custom reviews" target="_blank">'+ shopName +' customer reviews | Trusted Shops</a>' +
+                        '</div>'+
+                        '</div>');
+            }
+        });
+    });
+</script>
+</body>
+</html>
