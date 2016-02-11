@@ -15,7 +15,7 @@
 
         $.get( apiURL, function( data ) {
             var result = data.response.data.shop.qualityIndicators.reviewIndicator.overallMark;
-            var count = data.response.data.shop.qualityIndicators.reviewIndicator.activeReviewCount;
+            var count = data.response.data.shop.qualityIndicators.reviewIndicator.totalReviewCount;
             var shopName = data.response.data.shop.name;
             var max = "5.00";
 
