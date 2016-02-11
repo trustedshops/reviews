@@ -39,7 +39,7 @@ if (!cachecheck($cacheFileName, $cacheTimeOut)) {
 }
 if ($jsonObject = json_decode(file_get_contents($cacheFileName), true)) {
     $result = $jsonObject['response']['data']['shop']['qualityIndicators']['reviewIndicator']['overallMark'];
-    $count = $jsonObject['response']['data']['shop']['qualityIndicators']['reviewIndicator']['totalReviewCount'];
+    $count = $jsonObject['response']['data']['shop']['qualityIndicators']['reviewIndicator']['activeReviewCount'];
     $shopName = $jsonObject['response']['data']['shop']['name'];
     $max = "5.00";
 
