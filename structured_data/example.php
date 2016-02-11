@@ -50,6 +50,7 @@ if ($jsonObject = json_decode(file_get_contents($cacheFileName), true)) {
 if ($reviewsFound) { ?>
     <div itemscope itemtype="http://schema.org/LocalBusiness">
         <div itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+            <meta itemprop="name" content="demoshop.trustedshops.com">
             <span itemprop="ratingValue"><?php echo $result;?></span> /
             <span itemprop="bestRating"><?php echo $max;?></span> of
             <span itemprop="ratingCount"><?php echo $count;?> </span>
