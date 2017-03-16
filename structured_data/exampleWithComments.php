@@ -11,8 +11,8 @@ $tsId = 'XA2A8D35838AF5F63E5EB0E05847B1CB8';
 $cacheFileNameReviewsApi = '/tmp/' . $tsId . '_reviews.json';
 $cacheFileNameQiApi = '/tmp/' . $tsId . '_quality.json';
 $cacheTimeOut = 43200; // half a day
-$reviewsApiUrl = 'http://api.trustedshops.com/rest/public/v2/shops/' . $tsId . '/reviews.json';
-$qiApiUrl = 'http://api.trustedshops.com/rest/public/v2/shops/' . $tsId . '/quality.json';
+$reviewsApiUrl = 'https://gw1.api.trustedshops.com/shopReviews/standard/v3/public/reviews?tsId='.$tsId;
+$qiApiUrl = 'https://gw1.api.trustedshops.com/shopQualityIndicators/standard/v3/public/indicators?tsId='.$tsId;
 $xmlFound = false;
 
 if (!function_exists('cachecheck')) {

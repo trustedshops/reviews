@@ -10,7 +10,7 @@
 $tsId = 'XC8B181176B92AB62AB07D8AECEB02BF4';
 $cacheFileName = '/tmp/' . $tsId . '.json';
 $cacheTimeOut = 43200; // half a day
-$apiUrl = 'http://api.trustedshops.com/rest/public/v2/shops/'.$tsId.'/quality/reviews.json';
+$apiUrl = 'https://gw1.api.trustedshops.com/shopQualityIndicators/standard/v3/public/indicators?tsId='.$tsId;
 $reviewsFound = false;
 
 if (!function_exists('cachecheck')) {
