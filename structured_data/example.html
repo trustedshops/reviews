@@ -10,8 +10,8 @@
 <div id="reviewsAggregationOutput"></div>
 <script>
     $(function() {
-        var tsId = 'XC8B181176B92AB62AB07D8AECEB02BF4';
-        var apiURL = 'http://api.trustedshops.com/rest/public/v2/shops/'+ tsId +'/quality/reviews.json';
+        var tsId = 'XC8B181176B92AB62AB07D8AECEB02BF4';       
+        var apiURL = 'http://gw1.trustedshops.com/shopQualityIndicators/standard/v3/public/indicators?tsId=' + tsId;
 
         $.get( apiURL, function( data ) {
             var result = data.response.data.shop.qualityIndicators.reviewIndicator.overallMark;
