@@ -11,7 +11,7 @@
 <script>
     $(function() {
         var tsId = 'XC8B181176B92AB62AB07D8AECEB02BF4';       
-        var apiURL = 'http://gw1.trustedshops.com/shopQualityIndicators/standard/v3/public/indicators?tsId=' + tsId;
+        var apiURL = 'https://gw1.api.trustedshops.com/shopQualityIndicators/standard/v3/public/indicators?tsId=' + tsId;
 
         $.get( apiURL, function( data ) {
             var result = data.response.data.shop.qualityIndicators.reviewIndicator.overallMark;
