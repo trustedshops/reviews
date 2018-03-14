@@ -7,7 +7,7 @@
  * Requires version PHP 5.+
  */
 
-$tsId = 'XC8B181176B92AB62AB07D8AECEB02BF4';
+$tsId = 'XA2A8D35838AF5F63E5EB0E05847B1CB8';
 $cacheFileName = '/tmp/' . $tsId . '.json';
 $cacheTimeOut = 43200; // half a day
 $apiUrl = 'http://api.trustedshops.com/rest/public/v2/shops/'.$tsId.'/quality/reviews.json';
